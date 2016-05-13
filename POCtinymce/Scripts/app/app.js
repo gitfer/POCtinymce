@@ -1,7 +1,7 @@
 ﻿var myAppModule = angular.module('myApp', ['ui.tinymce']);
 
 myAppModule.controller('TinyMceController', function ($scope, $timeout) {
-    $scope.tinymceModel = '<h2>Il contenuto editabile cambiera\' dop 3 secondi</h2><div class="myclass mceNonEditable arx-injectable-content" style="background-color: yellow">Contenuto <strong>non editabile</strong> con un po\' di formattazione</div><div class="myclass arx-injectable-content">Zona con nostro placeholder sostituibile</div>';
+    $scope.tinymceModel = '<h2>Il contenuto editabile cambiera\' dopo 3 secondi</h2><h3>Testo non editabile</h3><div class="myclass mceNonEditable arx-injectable-content" style="background-color: yellow">Contenuto <strong>non editabile</strong> con un po\' di formattazione</div><div class="myclass arx-injectable-content">Zona con nostro placeholder sostituibile</div>';
 
 
     $scope.getContent = function () {
@@ -11,7 +11,16 @@ myAppModule.controller('TinyMceController', function ($scope, $timeout) {
     $scope.setContent = function () {
         $scope.tinymceModel = 'Time: ' + (new Date());
     };
-
+    
+    function removeHtmlContent(editor, placeholder) {
+        // Qui potremmo mettere logica per non permettere l'editing programmatico delle porzioni marcate con mceNonEditable
+        var content = editor.getContent();
+        var el = $('<div></div>');
+        el.html(content);
+        $(el).find(placeholder).remove();
+        var newHtmlContent = $(el).html();
+        return newHtmlContent;
+    }
     function setHtmlContent(editor, placeholder, htmlContent) {
         // Qui potremmo mettere logica per non permettere l'editing programmatico delle porzioni marcate con mceNonEditable
         var content = editor.getContent();
@@ -65,17 +74,23 @@ myAppModule.controller('TinyMceController', function ($scope, $timeout) {
     }
 
     $scope.tinymceOptions = {
+        min_height: 600,
         plugins: 'link image code noneditable',
         toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | code',
         setup: function(editor) {
             //Focus the editor on load
-            $timeout(function(){ editor.focus(); });
+            //$timeout(function(){ editor.focus(); });
             editor.on("init", function () {
                 $timeout(function () {
-                    editor.setContent(setHtmlContent(editor, '.arx-injectable-content', 'ssd <strong>con parte in bold</strong><div class="arx-injectable-content-table"></div>'));
-                    var tableData = [['1o el', '2o el'], ['3o el', '4o el']];
+                    // Remove html tag
+                    editor.setContent(removeHtmlContent(editor, 'h2'));
+                    // Set multiple html tags (editable or non-editable)
+                    editor.setContent(setHtmlContent(editor, '.arx-injectable-content', 'Nuovo testo <strong>con parte in bold</strong><div class="arx-injectable-content-table"></div>'));
+                    // Create table
+                    var tableData = [['1o elemento', '2o elemento'], ['3o elemento', '4o elemento']];
                     var newContent = generate_table(editor, '.arx-injectable-content-table:first', tableData);
                     editor.setContent(newContent);
+                    $scope.tinymceModel = newContent;
                 }, 3000);
                 
             });
