@@ -18,7 +18,50 @@ myAppModule.controller('TinyMceController', function ($scope, $timeout) {
         var el = $('<div></div>');
         el.html(content);
         $(el).find(placeholder).html(htmlContent);
-        editor.setContent($(el).html());
+        var newHtmlContent = $(el).html();
+        return newHtmlContent;
+    }
+    function generate_table(editor, placeholder, tableData) {
+        // get the reference for the body
+        var content = editor.getContent();
+        var el = $('<div></div>');
+        el.html(content);
+        var body = $(el).find(placeholder)[0];
+
+        // creates a <table> element and a <tbody> element
+        var tbl = document.createElement("table");
+        var tblBody = document.createElement("tbody");
+
+        // creating all cells
+        for (var i = 0; i < 2; i++) {
+            // creates a table row
+            var row = document.createElement("tr");
+
+            for (var j = 0; j < 2; j++) {
+                // Create a <td> element and a text node, make the text
+                // node the contents of the <td>, and put the <td> at
+                // the end of the table row
+                var cell = document.createElement("td");
+                //var cellText = document.createTextNode("cell in row " + i + ", column " + j);
+                var cellText = document.createTextNode(tableData[i][j]);
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            }
+
+            // add the row to the end of the table body
+            tblBody.appendChild(row);
+        }
+
+        // put the <tbody> in the <table>
+        tbl.appendChild(tblBody);
+        // appends <table> into <body>
+        body.appendChild(tbl);
+        // sets the border attribute of tbl to 2;
+        tbl.setAttribute("border", "2");
+
+        $(el).find(placeholder).html(body.innerHTML);
+        var newHtmlContent = $(el).html();
+        return newHtmlContent;
     }
 
     $scope.tinymceOptions = {
@@ -29,7 +72,10 @@ myAppModule.controller('TinyMceController', function ($scope, $timeout) {
             $timeout(function(){ editor.focus(); });
             editor.on("init", function () {
                 $timeout(function () {
-                    setHtmlContent(editor, '.arx-injectable-content', 'ssd <strong>con parte in bold</strong>');
+                    editor.setContent(setHtmlContent(editor, '.arx-injectable-content', 'ssd <strong>con parte in bold</strong><div class="arx-injectable-content-table"></div>'));
+                    var tableData = [['1o el', '2o el'], ['3o el', '4o el']];
+                    var newContent = generate_table(editor, '.arx-injectable-content-table:first', tableData);
+                    editor.setContent(newContent);
                 }, 3000);
                 
             });
