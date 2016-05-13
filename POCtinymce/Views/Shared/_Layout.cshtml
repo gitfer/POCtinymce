@@ -11,21 +11,6 @@
 <body ng-app="myApp">
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
-            @*<div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, null)</li>
-                    <li>@Html.ActionLink("API", "Index", "Help", new { area = "HelpPage" }, null)</li>
-                </ul>
-                @Html.Partial("_LoginPartial")
-            </div>*@
         </div>
     </div>
     <div class="container body-content">
@@ -33,10 +18,15 @@
         @RenderSection("SPAViews", required: false)
 
         <form method="post" ng-controller="TinyMceController">
-            <textarea ui-tinymce="tinymceOptions" ng-model="tinymceModel"></textarea>
+            <textarea ui-tinymce="tinymceOptions" ng-model="tinymceModel">
+                
+            
+            </textarea>
+            
             <button ng-click="getContent()">Get content</button>
             <button ng-click="setContent()">Set content</button>
         </form>
+
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
@@ -50,5 +40,6 @@
     <script src="~/bower_components/angular/angular.js"></script>
     <script src="~/bower_components/angular-ui-tinymce/src/tinymce.js"></script>
     <script src="~/Scripts/app/app.js"></script>
+    <script src="~/Scripts/app/arxInjectableContent.js"></script>
 </body>
 </html>
